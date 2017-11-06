@@ -1,2 +1,2 @@
 # simple-node-router
-declare route and response function by json
+Module for define route by json template
