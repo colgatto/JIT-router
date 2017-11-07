@@ -1,0 +1,35 @@
+{
+	"index" : "pagina.html",
+	"routing" : {
+		"route1" : {
+			"route11" : {
+				"route111" : {
+					"cb" : "callback1"
+				},
+				"route112" : {
+					"cb" : "callback2"
+				}
+			}
+		},
+		"route2" : {
+			"cb" : "callback3"
+		},
+		"route3" : {
+			"route31" : {
+				"cb" : "callback4"
+			}
+		},
+		"route4" : {
+			"route41" : {
+				"route411" : {
+					"cb" : "callback5"
+				}
+			},
+			"route42" : {
+				"route421" : {
+					"cb" : "callback6"
+				}
+			}
+		}
+	}
+}
