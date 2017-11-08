@@ -13,9 +13,19 @@ server.listen(port, ip);
 responseList = {
 	'index' : function(data){
 		var response = {};
-		responde.page = 'index';
+		response.page = 'index';
 		return response;
 	},
+	/**/
+	'favicon' : function(data){
+		var response = {};
+		response.page = "favicon";
+		response.header = router.defaultHeaders;
+		response.header['Content-Type'] = 'image/x-icon';
+		console.log('favicon requested');
+		return response;
+	},
+	/**/
 	'page1' : function(data){
 		var response = {};
 		response.page = 'uno';

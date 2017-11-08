@@ -1,6 +1,9 @@
 {
 	"siteUrl" : "http://127.0.0.1:8080",
 	"routing" : {
+		"favicon.ico" : {
+			"cb" : "favicon"
+		},
 		"route1" : {
 			"cb" : "page1",
 			"route11" : {

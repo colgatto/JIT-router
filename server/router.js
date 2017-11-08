@@ -5,7 +5,7 @@ const sitemap = require('./sitemap');
 "siteUrl" : "http://127.0.0.1:8080",
 "index" : "/public/index.html",
 /**/
-var defaultHeaders = {
+exports.defaultHeaders = {
 	"access-control-allow-origin": "*",
 	"access-control-allow-methods": "GET",
 	//"access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -22,7 +22,7 @@ prepareResponse = function(req, cb){
 	req.on('end', function() { cb(data); });
 };
 
-respond = function(res, data, head = defaultHeaders, status = 200) {
+respond = function(res, data, head = exports.defaultHeaders, status = 200) {
 	console.log(head);
 	res.writeHead(status, head);
 	res.write(data);
@@ -31,7 +31,7 @@ respond = function(res, data, head = defaultHeaders, status = 200) {
 };
 
 send404 = function(res){
-	respond(res, 'Not Found',defaultHeaders, 404);
+	respond(res, 'Not Found',exports.defaultHeaders, 404);
 };
 
 redirector = function(res, loc, status = 302){
@@ -77,7 +77,7 @@ var actions = {
 	'GET': function(req, res) {
 		
 		var ReqObj = makeReqObj(req);
-		//console.log(ReqObj);
+		console.log(ReqObj);
 		
 		if(ReqObj){
 			//console.log(ReqObj.cb);
@@ -111,14 +111,6 @@ var actions = {
 exports.indexPage = sitemap.index;
 
 exports.handleRequest = function(req, res) {
-	/**/
-	if(req.url === '/favicon.ico'){
-		res.writeHead(200, {'Content-Type': 'image/x-icon'} );
-		res.end();
-		//console.log('favicon requested');
-		return;
-	}
-	/**/
 	var action = actions[req.method];
 	action ? action(req, res) : send404(res);
 };
