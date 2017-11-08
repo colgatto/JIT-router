@@ -1,73 +1,121 @@
 const path = require('path');
 const url = require('url');
 const sitemap = require('./sitemap');
-//const util = require('util');
-
-var headers = {
+/**
+"siteUrl" : "http://127.0.0.1:8080",
+"index" : "/public/index.html",
+/**/
+var defaultHeaders = {
 	"access-control-allow-origin": "*",
-	"access-control-allow-methods": "GET, POST",
+	"access-control-allow-methods": "GET",
 	//"access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
 	"access-control-allow-headers": "content-type, accept",
-	//"access-control-max-age": 10,
+	"access-control-max-age": 10,
 	//"Content-Type": "application/json"
 };
 
-console.log(JSON.stringify(sitemap, null, 2));
+//console.log(JSON.stringify(sitemap, null, 2));
 
 prepareResponse = function(req, cb){
 	var data = "";
 	req.on('data', function(chunk) { data += chunk; });
 	req.on('end', function() { cb(data); });
-}
+};
 
-respond = function(res, data, status = 200) {
-	res.writeHead(status, headers);
+respond = function(res, data, head = defaultHeaders, status = 200) {
+	console.log(head);
+	res.writeHead(status, head);
 	res.write(data);
 	res.end();
-}
+	console.log(status);
+};
 
 send404 = function(res){
-	respond(res, 'Not Found', 404);
-}
+	respond(res, 'Not Found',defaultHeaders, 404);
+};
 
-redirector = function(res, loc, status = 307){
+redirector = function(res, loc, status = 302){
+	if(loc[0] === "/"){
+		loc = sitemap.siteUrl + loc;
+	}
 	res.writeHead(status, { Location: loc });
 	res.end();
-}
+	console.log(status+" -> "+loc);
+};
+
+makeReqObj = function(req){
+	var ReqObj = {};
+	ReqObj.data = {};
+	var minRes = url.parse(req.url);
+	ReqObj.data.route = minRes.pathname.split('/');
+	ReqObj.data.route.shift();
+	if(minRes.query != null){
+		ReqObj.data.arguments = minRes.query.split("&").reduce(function(obj,item){
+			var splitted = item.split('=');
+			obj[splitted[0]] = splitted[1];
+			return obj;
+		}, {});
+	}
+	var check = ReqObj.data.route.reduce(function(anchor,item){
+		return anchor[item];
+	},sitemap.routing);
+	
+	if(typeof check !== "undefined" && (typeof check.cb !== "undefined" || typeof check.redirect !== "undefined")){
+		ReqObj.cb = check.cb;
+		ReqObj.redirect = check.redirect;
+	}
+	else if(minRes.pathname === "/"){
+		ReqObj.cb = "index";
+	}
+	else{
+		ReqObj = false;
+	}
+	return ReqObj;
+};
 
 var actions = {
 	'GET': function(req, res) {
-		var data = {};
-		var minRes = url.parse(req.url);
-		data.route = minRes.pathname.split('/');
-		data.route.shift();
-		if(minRes.query != null){
-			data.arguments = minRes.query.split("&").reduce(function(obj,item){
-				var splitted = item.split('=');
-				obj[splitted[0]] = splitted[1];
-				return obj;
-			}, {});
+		
+		var ReqObj = makeReqObj(req);
+		//console.log(ReqObj);
+		
+		if(ReqObj){
+			//console.log(ReqObj.cb);
+			if(ReqObj.redirect){
+				if(ReqObj.cb)
+					responseList[ReqObj.cb];
+				redirector(res,ReqObj.redirect);
+			}else{
+				var cb = responseList[ReqObj.cb];
+				if(cb){
+					var response = cb(ReqObj.data);
+					respond(res, response.page, response.headers);
+				}else
+					send404(res);
+			}
+		}else{
+			send404(res);
 		}
-		console.log(data);
-		if(data.route[0] === "index")
-			redirector(res,"/public/index.html");
-		else
-			respond(res, "<div>fatto</div>");
 	},
+	/**/
 	'POST': function(req, res) {
 		prepareResponse(req, function(data) {
-			//redirector(res, /* redirect path , optional status code -	defaults to 302 */);
+			//redirector(res,path,302);
 			//respond(res, data);
 		});
 	}
+	/**/
 }; 
+
+
+exports.indexPage = sitemap.index;
 
 exports.handleRequest = function(req, res) {
 	/**/
 	if(req.url === '/favicon.ico'){
 		res.writeHead(200, {'Content-Type': 'image/x-icon'} );
 		res.end();
-		console.log('favicon requested');
+		//console.log('favicon requested');
 		return;
 	}
 	/**/

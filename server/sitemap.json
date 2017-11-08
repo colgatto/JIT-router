@@ -1,33 +1,39 @@
 {
-	"index" : "pagina.html",
+	"siteUrl" : "http://127.0.0.1:8080",
 	"routing" : {
 		"route1" : {
+			"cb" : "page1",
 			"route11" : {
+				"cb" : "page2",
 				"route111" : {
-					"cb" : "callback1"
+					"cb" : "page3"
 				},
 				"route112" : {
-					"cb" : "callback2"
+					"cb" : "page4"
 				}
 			}
 		},
 		"route2" : {
-			"cb" : "callback3"
+			"redirect" : "https://www.google.com",
+			"cb" : "page5"
 		},
 		"route3" : {
+			"redirect" : "/public/index.html",
 			"route31" : {
-				"cb" : "callback4"
+				"redirect" : "/route1/route11",
+				"cb" : "page6"
 			}
 		},
 		"route4" : {
 			"route41" : {
+				"cb" : "page7",
 				"route411" : {
-					"cb" : "callback5"
+					"cb" : "page8"
 				}
 			},
 			"route42" : {
 				"route421" : {
-					"cb" : "callback6"
+					"cb" : "page9"
 				}
 			}
 		}
