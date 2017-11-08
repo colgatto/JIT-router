@@ -21,7 +21,7 @@
 			"cb" : "page5"
 		},
 		"route3" : {
-			"redirect" : "/public/index.html",
+			"loadFile" : "/public/index.html",
 			"route31" : {
 				"redirect" : "/route1/route11",
 				"cb" : "page6"

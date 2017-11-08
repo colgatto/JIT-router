@@ -16,7 +16,6 @@ responseList = {
 		response.page = 'index';
 		return response;
 	},
-	/**/
 	'favicon' : function(data){
 		var response = {};
 		response.page = "favicon";
@@ -25,7 +24,6 @@ responseList = {
 		console.log('favicon requested');
 		return response;
 	},
-	/**/
 	'page1' : function(data){
 		var response = {};
 		response.page = 'uno';

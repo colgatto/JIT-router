@@ -1,5 +1,6 @@
 const path = require('path');
 const url = require('url');
+const fs = require('fs');
 const sitemap = require('./sitemap');
 /**
 "siteUrl" : "http://127.0.0.1:8080",
@@ -35,9 +36,8 @@ send404 = function(res){
 };
 
 redirector = function(res, loc, status = 302){
-	if(loc[0] === "/"){
+	if(loc[0] === "/")
 		loc = sitemap.siteUrl + loc;
-	}
 	res.writeHead(status, { Location: loc });
 	res.end();
 	console.log(status+" -> "+loc);
@@ -60,9 +60,10 @@ makeReqObj = function(req){
 		return anchor[item];
 	},sitemap.routing);
 	
-	if(typeof check !== "undefined" && (typeof check.cb !== "undefined" || typeof check.redirect !== "undefined")){
+	if(typeof check !== "undefined" && (typeof check.cb !== "undefined" || typeof check.redirect !== "undefined" || typeof check.loadFile !== "undefined")){
 		ReqObj.cb = check.cb;
 		ReqObj.redirect = check.redirect;
+		ReqObj.loadFile = check.loadFile;
 	}
 	else if(minRes.pathname === "/"){
 		ReqObj.cb = "index";
@@ -72,7 +73,8 @@ makeReqObj = function(req){
 	}
 	return ReqObj;
 };
-
+/**
+/**/
 var actions = {
 	'GET': function(req, res) {
 		
@@ -81,10 +83,18 @@ var actions = {
 		
 		if(ReqObj){
 			//console.log(ReqObj.cb);
-			if(ReqObj.redirect){
+			if(ReqObj.loadFile){
+				fs.readFile(__dirname+"/.."+ReqObj.loadFile, 'utf8', function (err,data){
+					if(err)
+						return console.log(err);
+					var response = {};
+					response.page = data;
+					respond(res, data);
+				});
+			}else if(ReqObj.redirect){
 				if(ReqObj.cb)
 					responseList[ReqObj.cb];
-				redirector(res,ReqObj.redirect);
+				redirector(res, ReqObj.redirect);
 			}else{
 				var cb = responseList[ReqObj.cb];
 				if(cb){
