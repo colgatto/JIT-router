@@ -18,15 +18,15 @@ responseList = {
 	},
 	'favicon' : function(data){
 		var response = {};
-		response.page = "favicon";
+		response.page = "";
 		response.header = router.defaultHeaders;
-		response.header['Content-Type'] = 'image/x-icon';
+		//response.header['Content-Type'] = 'image/x-icon';
 		console.log('favicon requested');
 		return response;
 	},
 	'page1' : function(data){
 		var response = {};
-		response.page = 'uno';
+		response.page = JSON.stringify('uno');
 		response.headers = {
 			"access-control-allow-origin": "*",
 			"access-control-allow-methods": "GET, POST, PUT, DELETE",

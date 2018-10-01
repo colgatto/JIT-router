@@ -56,21 +56,20 @@ makeReqObj = function(req){
 			return obj;
 		}, {});
 	}
+	if(minRes.pathname === "/"){
+		ReqObj.cb = "index";
+		return ReqObj;
+	}
+
 	var check = ReqObj.data.route.reduce(function(anchor,item){
 		return anchor[item];
 	},sitemap.routing);
-	
-	if(typeof check !== "undefined" && (typeof check.cb !== "undefined" || typeof check.redirect !== "undefined" || typeof check.loadFile !== "undefined")){
-		ReqObj.cb = check.cb;
-		ReqObj.redirect = check.redirect;
-		ReqObj.loadFile = check.loadFile;
-	}
-	else if(minRes.pathname === "/"){
-		ReqObj.cb = "index";
-	}
-	else{
-		ReqObj = false;
-	}
+
+	if(check == null || (check.cb == null && check.redirect == null && check.loadFile == null))
+		return false;
+	ReqObj.cb = check.cb;
+	ReqObj.redirect = check.redirect;
+	ReqObj.loadFile = check.loadFile;
 	return ReqObj;
 };
 /**
@@ -82,7 +81,6 @@ var actions = {
 		console.log(ReqObj);
 		
 		if(ReqObj){
-			//console.log(ReqObj.cb);
 			if(ReqObj.loadFile){
 				fs.readFile(__dirname+"/.."+ReqObj.loadFile, 'utf8', function (err,data){
 					if(err)
